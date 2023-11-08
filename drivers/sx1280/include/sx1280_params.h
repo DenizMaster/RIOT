@@ -67,19 +67,19 @@ extern "C" {
 #endif
 
 #ifndef SX1280_PARAM_SPI_NSS
-#define SX1280_PARAM_SPI_NSS                GPIO_PIN(1, 6)  /**< SPI NSS pin */
+#define SX1280_PARAM_SPI_NSS                GPIO_PIN(0, 8)  /**< SPI NSS pin */
 #endif
 
 #ifndef SX1280_PARAM_RESET
-#define SX1280_PARAM_RESET                  GPIO_PIN(0, 8)  /**< Reset pin */
+#define SX1280_PARAM_RESET                  GPIO_PIN(0, 0)  /**< Reset pin */
 #endif
 
 #ifndef SX1280_PARAM_DIO0
-#define SX1280_PARAM_DIO0                   GPIO_PIN(1, 10) /**< DIO0 */
+#define SX1280_PARAM_DIO0                   GPIO_PIN(1, 3) /**< DIO0 */
 #endif
 
 #ifndef SX1280_PARAM_DIO1
-#define SX1280_PARAM_DIO1                   GPIO_PIN(2, 7) /**< DIO1 */
+#define SX1280_PARAM_DIO1                   GPIO_PIN(1, 4) /**< DIO1 */
 #endif
 
 
