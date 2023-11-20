@@ -8,7 +8,7 @@
  */
 
 /**
- * @ingroup     tests
+ * @ingroup     tests für tests
  * @{
  *
  * @file
