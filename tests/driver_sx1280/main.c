@@ -27,6 +27,7 @@
 #include "msg.h"
 #include "thread.h"
 #include "shell.h"
+#include "mutex.h"
 
 #include "net/lora.h"
 #include "net/netdev.h"
@@ -47,6 +48,8 @@ static kernel_pid_t _recv_pid;
 static char message[SX1280_MAX_PAYLOAD_LEN];
 
 static sx1280_t sx1280;
+
+mutex_t m;
 
 static void _event_cb(netdev_t *dev, netdev_event_t event)
 {
@@ -71,11 +74,13 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
             printf(
                 "Received: \"%s\" (%d bytes) - [RSSI: %i, SNR: %i]\n",
                 message, (int)len, packet_info.rssi, (int)packet_info.snr);
+                
         }
         break;
 
         case NETDEV_EVENT_TX_COMPLETE:
             puts("Transmission completed");
+            mutex_unlock(&m);
             break;
 
         case NETDEV_EVENT_TX_TIMEOUT:
@@ -285,8 +290,8 @@ static int sx1280_tx_cmd(netdev_t *netdev, int argc, char **argv)
     printf("sending \"%s\" payload (%u bytes)\n",
            argv[2], (unsigned)strlen(argv[2]) + 1);
     iolist_t iolist = {
-        .iol_base = argv[2],
-        .iol_len = (strlen(argv[2]) + 1)
+        .iol_base = argv[2],// pointer übergeben
+        .iol_len = (strlen(argv[2]) + 1)//länge des pointer
     };
 
     if (netdev->driver->send(netdev, &iolist) == -ENOTSUP) {
@@ -295,6 +300,64 @@ static int sx1280_tx_cmd(netdev_t *netdev, int argc, char **argv)
     }
 
     return 0;
+}
+
+int len_helper(int x){
+	if (x>=10000)	return 5;
+	if (x>=1000) 	return 4;
+	if (x>=100)	return 3;
+	if (x>=10)	return 2;
+	return 1;
+}
+
+int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
+{
+	(void)argc;
+	//(void)argv;
+	int i =1;
+	int j = atoi(argv[2]);
+	printf("%s\n",argv[2]);
+	printf("amount: %d\n",j);
+	//int output_test[2];
+	while(i<j){
+		//output_test[0]=i;
+		iolist_t iolist ={
+			//.iol_base =&output_test[0],
+			.iol_base=&i,
+			.iol_len=len_helper(i)};
+		i++;
+		
+	
+		if (netdev->driver->send(netdev, &iolist) == -ENOTSUP) {
+        		puts("Cannot send: radio is still transmitting");
+        		return -1;
+    		}
+    		mutex_lock(&m);
+	}
+	return 0;
+	
+}
+
+int sx1280_constwave_cmd(netdev_t *netdev, int argc, char **argv)
+{
+	int exit_value=0;
+    	(void)argc;
+	iolist_t iolist ={
+	.iol_base =argv[0],
+	.iol_len=(unsigned)strlen(argv[0])};
+	
+	while(exit_value!=-1){
+		if (netdev->driver->send(netdev, &iolist) == -ENOTSUP) {
+        		puts("Cannot send: radio is still transmitting");
+        		exit_value= -1;
+        	}
+        	mutex_lock(&m); 
+        	
+	}
+
+	
+	return exit_value;
+	
 }
 
 static int sx1280_reset_cmd(netdev_t *netdev, int argc, char **argv)
@@ -312,7 +375,7 @@ static int sx1280_reset_cmd(netdev_t *netdev, int argc, char **argv)
 int sx1280_cmd(int argc, char **argv)
 {
     if (argc < 2) {
-        printf("Usage: %s <get|set|rx|tx|reset>\n", argv[0]);
+        printf("Usage: %s <get|set|rx|tx|tx_constwave|tx_flooding|reset>\n", argv[0]);
         return -1;
     }
 
@@ -333,9 +396,21 @@ int sx1280_cmd(int argc, char **argv)
     else if (!strcmp("reset", argv[1])) {
         return sx1280_reset_cmd(netdev, argc, argv);
     }
+    else if (!strcmp("tx_constwave",argv[1])) {
+    	return sx1280_constwave_cmd(netdev, argc, argv); //TODO: anpassen
+    }
+    else if (!strcmp("tx_flooding",argv[1])) {
+    	if(argc < 3){
+    		printf("needed: amount of msgs (<=10000)\n like: sx1280 tx_flooding 1000");
+    		return -1;
+    	}
+    	else {
+    		return sx1280_flood_cmd(netdev, argc, argv); //TODO: anpassen
+    	}
+    }
     else {
         printf("Unknown cmd %s\n", argv[1]);
-        printf("Usage: %s <get|set|rx|tx|reset>\n", argv[0]);
+        printf("Usage: %s <get|set|rx|tx|tx_constwave|tx_flooding|reset>\n", argv[0]);
         return -1;
     }
 
@@ -350,6 +425,9 @@ static const shell_command_t shell_commands[] = {
 int main(void)
 {
     sx1280_setup(&sx1280, &sx1280_params[0], 0);
+
+    mutex_init(&m);
+    mutex_lock(&m);
 
     netdev_t *netdev = &sx1280.netdev;
 
