@@ -451,10 +451,10 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
         return sizeof(bool);
     
     /*greift auf RIOT/build/pkg/lorabasicsmodem/sx1280_driver/src/sx1280.c zu */
-    case NETOPT_RF_TESTMODE_TX_CW:
+    case NETOPT_RF_TESTMODE:
         assert(len == sizeof(netopt_rf_testmode_t));
         netopt_rf_testmode_t *mode =val;
-        if(*mode==NETOPT_RF_TESTMODE_CTX_CW){    
+        if(*mode==NETOPT_RF_TESTMODE){    
             sx1280_set_tx_cw(dev->ral.context); 
             return sizeof(uint8_t);
         }

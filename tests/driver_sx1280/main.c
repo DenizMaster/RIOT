@@ -364,7 +364,7 @@ int const_wave(netdev_t *netdev, int argc, char **argv)
 {
     (void)argc;
     (void)argc;
-    netopt_rf_testmode_t mode = NETOPT_RF_TESTMODE_TX_CW;
+    netopt_rf_testmode_t mode = NETOPT_RF_TESTMODE;
 
     puts("starting constant wave");
     netdev->driver->set(netdev,NETOPT_RF_TESTMODE,&mode, sizeof(mode));
