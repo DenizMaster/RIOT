@@ -453,7 +453,7 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
     /*greift auf RIOT/build/pkg/lorabasicsmodem/sx1280_driver/src/sx1280.c zu */
     case NETOPT_RF_TESTMODE:
         assert(len <= sizeof(uint8_t));    
-        *((uint8_t *)val) = sx1280_set_tx_cw(dev->ral.context); 
+        sx1280_set_tx_cw(dev->ral.context); 
         return sizeof(uint8_t);
 
     default:
