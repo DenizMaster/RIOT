@@ -409,7 +409,7 @@ int sx1280_cmd(int argc, char **argv)
         return sx1280_reset_cmd(netdev, argc, argv);
     }
     else if (!strcmp("tx_constwave",argv[1])) {
-    	return sx1280_constwave_cmd(netdev, argc, argv); //TODO: anpassen
+    	return const_wave(netdev, argc, argv); //TODO: anpassen
     }
     else if (!strcmp("tx_flooding",argv[1])) {
     	if(argc < 3){
