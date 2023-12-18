@@ -289,6 +289,12 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
     }
 
     return -ENOTSUP;
+
+}
+
+static int constwave(sx1280_t *dev){
+
+    sx1280_set_tx_cw(dev->ral.context);
 }
 
 static int _set_state(sx1280_t *dev, netopt_state_t state)

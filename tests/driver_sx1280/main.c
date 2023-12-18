@@ -337,7 +337,7 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
 	return 0;
 	
 }
-
+/*
 int sx1280_constwave_cmd(netdev_t *netdev, int argc, char **argv)
 {
 	int exit_value=0;
@@ -359,7 +359,18 @@ int sx1280_constwave_cmd(netdev_t *netdev, int argc, char **argv)
 	return exit_value;
 	
 }
+*/
+int const_wave(netdev_t *netdev, int argc, char **argv)
+{
+    (void)argc;
+    (void)argc;
 
+    puts("starting constant wave");
+    netdev->driver->constwave(netdev);
+
+
+
+}
 static int sx1280_reset_cmd(netdev_t *netdev, int argc, char **argv)
 {
     (void)argc;
