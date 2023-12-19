@@ -291,12 +291,12 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
     return -ENOTSUP;
 
 }
-
+/*
 static int constwave(sx1280_t *dev){
 
     sx1280_set_tx_cw(dev->ral.context);
 }
-
+*/
 static int _set_state(sx1280_t *dev, netopt_state_t state)
 {
     (void)dev;
@@ -452,15 +452,18 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
     
     /*greift auf RIOT/build/pkg/lorabasicsmodem/sx1280_driver/src/sx1280.c zu */
     case NETOPT_RF_TESTMODE:
-        assert(len == sizeof(netopt_rf_testmode_t));
+        assert(len <= sizeof(netopt_rf_testmode_t));
+        /*
         netopt_rf_testmode_t *mode =val;
-        if(*mode==NETOPT_RF_TESTMODE){    
+        if(*mode==NETOPT_STATE_RESET){    
             sx1280_set_tx_cw(dev->ral.context); 
             return sizeof(uint8_t);
         }
         else{
             return -ENOTSUP;
-        }
+        }*/
+        sx1280_set_tx_cw(dev->ral.context); 
+        return sizeof(uint8_t);
 
     default:
         DEBUG(" OPT unrecognised (missing case) %i", opt);
