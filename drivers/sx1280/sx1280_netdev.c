@@ -448,8 +448,12 @@ static int _set(netdev_t *netdev, netopt_t opt, const void *val, size_t len)
     case NETOPT_IQ_INVERT:
         assert(len <= sizeof(netopt_enable_t));
         sx1280_set_lora_iq_invert(dev, *((const netopt_enable_t *)val) ? true : false);
-        return sizeof(bool);
-    
+        return sizeof(bool);/*
+    case NETOPT_TX_POWER:
+        assert(len <= sizeof());
+        uint8_t pwr = *((const uint8_t *)val);
+        sx1280_set_tx_params(dev->ral.context,pwr)
+    */
     /*greift auf RIOT/build/pkg/lorabasicsmodem/sx1280_driver/src/sx1280.c zu */
     case NETOPT_RF_TESTMODE:
         assert(len <= sizeof(netopt_rf_testmode_t));
