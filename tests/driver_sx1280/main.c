@@ -72,8 +72,9 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
             netdev_lora_rx_info_t packet_info;
             dev->driver->recv(dev, message, len, &packet_info);
             printf(
-                "Received: \"%s\" (%d bytes) - [RSSI: %i, SNR: %i]\n",
-                message, (int)len, packet_info.rssi, (int)packet_info.snr);
+                //"Received: \"%s\" (%d bytes) - [RSSI: %i, SNR: %i]\n",
+                //message, (int)len, packet_info.rssi, (int)packet_info.snr);
+                "%s X %i X %i",message,packet_info.rssi,(int)packet_info.snr);
                 
         }
         break;
