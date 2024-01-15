@@ -135,7 +135,10 @@ static void _usage_sf(void)
 {
     printf("Usage: use SF between 5 and 12\n");
 }
-
+static void _usage_pwr(void)
+{
+    printf("Usage: use power between -18 and 13 (dBm)\n");
+}
 static void _usage_cr(void)
 {
     printf(
@@ -193,7 +196,7 @@ static int sx1280_get_cmd(netdev_t *netdev, int argc, char **argv)
 
 static void _set_usage(const char *cmd)
 {
-    printf("Usage: %s set <freq|bw|sf|cr|> <value>\n", cmd);
+    printf("Usage: %s set <freq|bw|sf|cr|pwr> <value>\n", cmd);
 }
 
 static int sx1280_set_cmd(netdev_t *netdev, int argc, char **argv)
@@ -210,6 +213,9 @@ static int sx1280_set_cmd(netdev_t *netdev, int argc, char **argv)
         }
         if (!strcmp("cr", argv[2])) {
             _usage_cr();
+        }
+        if (!strcmp("pwr", argv[2])) {
+            _usage_pwr();
         }
     }
     if (argc != 4) {
@@ -234,6 +240,10 @@ static int sx1280_set_cmd(netdev_t *netdev, int argc, char **argv)
     else if (!strcmp("cr", argv[2])) {
         uint8_t cr = atoi(argv[3]);
         ret = netdev->driver->set(netdev, NETOPT_CODING_RATE, &cr, sizeof(uint8_t));
+    }
+    else if (!strcmp("pwr", argv[2])) {
+        int8_t pwr = atoi(argv[3]);
+        ret = netdev->driver->set(netdev, NETOPT_TX_POWER, &pwr, sizeof(int8_t));
     }
     else {
         _set_usage(argv[0]);
@@ -315,6 +325,7 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
 {
 	(void)argc;
 	//(void)argv;
+    char int_as_string[20];
 	int i =1;
 	int j = atoi(argv[2]);
 	printf("%s\n",argv[2]);
@@ -322,9 +333,11 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
 	//int output_test[2];
 	while(i<j){
 		//output_test[0]=i;
+        sprintf(int_as_string,"%d",i);
 		iolist_t iolist ={
 			//.iol_base =&output_test[0],
-			.iol_base=&i,
+            
+			.iol_base=int_as_string,
 			.iol_len=len_helper(i)};
 		i++;
 		
