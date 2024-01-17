@@ -68,13 +68,16 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
 
         case NETDEV_EVENT_RX_COMPLETE:
         {
+            uint16_t var;
+            
             size_t len = dev->driver->recv(dev, NULL, 0, 0);
             netdev_lora_rx_info_t packet_info;
             dev->driver->recv(dev, message, len, &packet_info);
+            memcpy(&var,message,sizeof(var));
             printf(
                 //"Received: \"%s\" (%d bytes) - [RSSI: %i, SNR: %i]\n",
                 //message, (int)len, packet_info.rssi, (int)packet_info.snr);
-                "%s X %i X %i",message,packet_info.rssi,(int)packet_info.snr);
+                "%d X %i X %i",var,packet_info.rssi,(int)packet_info.snr);
                 
         }
         break;
@@ -325,20 +328,21 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
 {
 	(void)argc;
 	//(void)argv;
-    char int_as_string[20];
-	int i =1;
+    //char int_as_string[20];
+	uint16_t i =1;
 	int j = atoi(argv[2]);
 	printf("%s\n",argv[2]);
 	printf("amount: %d\n",j);
 	//int output_test[2];
 	while(i<j){
 		//output_test[0]=i;
-        sprintf(int_as_string,"%d",i);
+        //sprintf(int_as_string,"%d",i);
 		iolist_t iolist ={
 			//.iol_base =&output_test[0],
             
-			.iol_base=int_as_string,
-			.iol_len=len_helper(i)};
+			//.iol_base=int_as_string,
+			.iol_base=&i,
+            .iol_len=sizeof(uint16_t)};
 		i++;
 		
 	
