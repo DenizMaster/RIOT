@@ -331,10 +331,10 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
     //char int_as_string[20];
 	uint16_t i =1;
 	int j = atoi(argv[2]);
-	printf("%s\n",argv[2]);
+	//printf("%s\n",argv[2]);
 	printf("amount: %d\n",j);
 	//int output_test[2];
-	while(i<j){
+	while(i<=j){
 		//output_test[0]=i;
         //sprintf(int_as_string,"%d",i);
 		iolist_t iolist ={
@@ -344,14 +344,18 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
 			.iol_base=&i,
             .iol_len=sizeof(uint16_t)};
 		i++;
-		
+
 	
 		if (netdev->driver->send(netdev, &iolist) == -ENOTSUP) {
         		puts("Cannot send: radio is still transmitting");
         		return -1;
     		}
     	mutex_lock(&m);
+        if (i>j){
+            printf("the End\n");
+        }
 	}
+    //printf("the End");
 	return 0;
 	
 }
