@@ -46,6 +46,9 @@ static char stack[SX1280_STACKSIZE];
 static kernel_pid_t _recv_pid;
 
 static char message[SX1280_MAX_PAYLOAD_LEN];
+const char fix_payoad[SX1280_MAX_PAYLOAD_LEN]="Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque pe";
+
+
 
 static sx1280_t sx1280;
 
@@ -77,7 +80,7 @@ static void _event_cb(netdev_t *dev, netdev_event_t event)
             printf(
                 //"Received: \"%s\" (%d bytes) - [RSSI: %i, SNR: %i]\n",
                 //message, (int)len, packet_info.rssi, (int)packet_info.snr);
-                "%d X %i X %i",var,packet_info.rssi,(int)packet_info.snr);
+                "payload:%d RSSI:%i SNR:%i bytes:%i \n",var,packet_info.rssi,(int)packet_info.snr,len);
                 
         }
         break;
@@ -326,23 +329,27 @@ int len_helper(int x){
 
 int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
 {
+    // sx1280 tx_flooding 1000 32
 	(void)argc;
 	//(void)argv;
     //char int_as_string[20];
 	uint16_t i =1;
 	int j = atoi(argv[2]);
+    int payload_len = atoi(argv[3]);
 	//printf("%s\n",argv[2]);
 	printf("amount: %d\n",j);
 	//int output_test[2];
 	while(i<=j){
 		//output_test[0]=i;
         //sprintf(int_as_string,"%d",i);
+        memcpy(message,&fix_payoad,sizeof(fix_payoad));
+        memcpy(message,&i,sizeof(i));
 		iolist_t iolist ={
 			//.iol_base =&output_test[0],
             
 			//.iol_base=int_as_string,
-			.iol_base=&i,
-            .iol_len=sizeof(uint16_t)};
+			.iol_base=&message,
+            .iol_len=payload_len};
 		i++;
 
 	
