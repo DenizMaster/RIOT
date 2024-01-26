@@ -32,6 +32,7 @@
 #include "net/lora.h"
 #include "net/netdev.h"
 #include "net/netdev/lora.h"
+#include "periph/gpio.h"
 
 #include "sx1280.h"
 #include "sx1280_params.h"
@@ -53,6 +54,9 @@ const char fix_payoad[SX1280_MAX_PAYLOAD_LEN]="Lorem ipsum dolor sit amet, conse
 static sx1280_t sx1280;
 
 mutex_t m;
+int po =0;
+int pi =15;
+gpio_mode_t mode = GPIO_OUT;
 
 static void _event_cb(netdev_t *dev, netdev_event_t event)
 {
@@ -272,11 +276,21 @@ static void _rx_usage(const char *cmd)
 
 static int sx1280_rx_cmd(netdev_t *netdev, int argc, char **argv)
 {
+    
+
+    if (gpio_init(GPIO_PIN(po, pi), mode) < 0) {
+            printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
+            return 1;
+        }
+    gpio_clear(GPIO_PIN(po,pi));
+
+
     if (argc == 2) {
         _rx_usage(argv[0]);
         return -1;
     }
 
+  
     if (!strcmp("start", argv[2])) {
         /* Switch to RX (IDLE) state */
         netopt_state_t state = NETOPT_STATE_IDLE;
@@ -299,9 +313,15 @@ static int sx1280_rx_cmd(netdev_t *netdev, int argc, char **argv)
 
 static int sx1280_tx_cmd(netdev_t *netdev, int argc, char **argv)
 {
+   
     if (argc == 2) {
         printf("Usage: %s tx <payload>\n", argv[0]);
         return -1;
+    }
+    
+    if (gpio_init(GPIO_PIN(po, pi), mode) < 0) {
+        printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
+        return 1;
     }
 
     printf("sending \"%s\" payload (%u bytes)\n",
@@ -331,9 +351,14 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
 {
     // sx1280 tx_flooding 1000 32
 	(void)argc;
+    
 	//(void)argv;
     //char int_as_string[20];
 	uint16_t i =1;
+    if (gpio_init(GPIO_PIN(po, pi), mode) < 0) {
+        printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
+        return 1;
+    }
 	int j = atoi(argv[2]);
     int payload_len = atoi(argv[3]);
 	//printf("%s\n",argv[2]);
@@ -393,8 +418,13 @@ int const_wave(netdev_t *netdev, int argc, char **argv)
 {
     (void)argc;
     (void)argv;
+    
     //netopt_rf_testmode_t mode = NETOPT_RF_TESTMODE;
     netopt_state_t state = NETOPT_STATE_RESET;;
+    if (gpio_init(GPIO_PIN(po, pi), mode) < 0) {
+        printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
+        return 1;
+    }
 
     puts("starting constant wave");
     netdev->driver->set(netdev,NETOPT_RF_TESTMODE,&state, sizeof(state));
