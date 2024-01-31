@@ -323,6 +323,7 @@ static int sx1280_tx_cmd(netdev_t *netdev, int argc, char **argv)
         printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
         return 1;
     }
+    gpio_set(GPIO_PIN(po,pi));
 
     printf("sending \"%s\" payload (%u bytes)\n",
            argv[2], (unsigned)strlen(argv[2]) + 1);
@@ -359,6 +360,7 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
         printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
         return 1;
     }
+    gpio_set(GPIO_PIN(po,pi));
 	int j = atoi(argv[2]);
     int payload_len = atoi(argv[3]);
 	//printf("%s\n",argv[2]);
@@ -425,6 +427,7 @@ int const_wave(netdev_t *netdev, int argc, char **argv)
         printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
         return 1;
     }
+    gpio_set(GPIO_PIN(po,pi));
 
     puts("starting constant wave");
     netdev->driver->set(netdev,NETOPT_RF_TESTMODE,&state, sizeof(state));
