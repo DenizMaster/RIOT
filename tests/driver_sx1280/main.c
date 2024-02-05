@@ -355,12 +355,12 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
     
 	//(void)argv;
     //char int_as_string[20];
-	uint16_t i =1;
+	uint16_t i =0;
     if (gpio_init(GPIO_PIN(po, pi), mode) < 0) {
         printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
         return 1;
     }
-    gpio_set(GPIO_PIN(po,pi));
+    //gpio_set(GPIO_PIN(po,pi));
 	int j = atoi(argv[2]);
     int payload_len = atoi(argv[3]);
 	//printf("%s\n",argv[2]);
@@ -368,6 +368,7 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
 	//int output_test[2];
 	while(i<=j){
 		//output_test[0]=i;
+        printf("test %d\n",i);
         //sprintf(int_as_string,"%d",i);
         memcpy(message,&fix_payoad,sizeof(fix_payoad));
         memcpy(message,&i,sizeof(i));
@@ -378,7 +379,7 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
 			.iol_base=&message,
             .iol_len=payload_len};
 		i++;
-
+        //printf("test:zeile 382\n");
 	
 		if (netdev->driver->send(netdev, &iolist) == -ENOTSUP) {
         		puts("Cannot send: radio is still transmitting");
@@ -389,7 +390,7 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
             printf("the End\n");
         }
 	}
-    //printf("the End");
+    //printf("test:the End");
 	return 0;
 	
 }
