@@ -318,12 +318,12 @@ static int sx1280_tx_cmd(netdev_t *netdev, int argc, char **argv)
         printf("Usage: %s tx <payload>\n", argv[0]);
         return -1;
     }
-    
+    /*
     if (gpio_init(GPIO_PIN(po, pi), mode) < 0) {
         printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
         return 1;
     }
-    gpio_set(GPIO_PIN(po,pi));
+    gpio_set(GPIO_PIN(po,pi));*/
 
     printf("sending \"%s\" payload (%u bytes)\n",
            argv[2], (unsigned)strlen(argv[2]) + 1);
@@ -355,12 +355,12 @@ int sx1280_flood_cmd(netdev_t *netdev, int argc, char **argv)
     
 	//(void)argv;
     //char int_as_string[20];
-	uint16_t i =0;
+	uint16_t i =1;
     if (gpio_init(GPIO_PIN(po, pi), mode) < 0) {
-        printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
+       printf("Error to initialize GPIO_PIN(%i, %02i)\n", po, pi);
         return 1;
     }
-    //gpio_set(GPIO_PIN(po,pi));
+    gpio_set(GPIO_PIN(po,pi));
 	int j = atoi(argv[2]);
     int payload_len = atoi(argv[3]);
 	//printf("%s\n",argv[2]);
